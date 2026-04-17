@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+*.log
+.env
+.env.local
+*.bak
+
+# Logs contain personal run history — keep local unless user explicitly publishes
+logs/*.md
+!logs/README.md
