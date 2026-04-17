@@ -120,7 +120,7 @@ mewtwo/
 
 ## 🔗 Skill library (what Mewtwo orchestrates)
 
-Current registry spans 22 skills across 7 families:
+Current registry spans 29 skills across 8 families:
 
 - **claudenotes** (9 skills) — agent factory for personal notes
 - **cowatch** (2 skills) — live lecture study buddy
@@ -129,6 +129,7 @@ Current registry spans 22 skills across 7 families:
 - **promptlatro** (1 skill) — prompt pattern roguelike
 - **royal-rumble** (1 skill) — multi-legend stock analysis
 - **coderecall** (1 skill) — first-letter recall drills
+- **claude-sessions** (7 skills) — archive + search conversation history
 
 See [`SKILLS_REGISTRY.md`](SKILLS_REGISTRY.md) for full entries.
 

@@ -206,11 +206,60 @@
 
 ---
 
+## claude-sessions (conversation archive + natural-language search)
+
+- **Repo:** https://github.com/DimmMak/claude-sessions
+- **Role:** Archives Claude Code JSONL sessions as searchable markdown. Provides natural-language search across entire conversation history.
+
+### time-machine:search
+- Purpose: natural-language search across archived sessions (read-only)
+- Inputs: query string (e.g. "when did we first mention X", "evolution of Y", "decide about Z")
+- Outputs: dates + session paths + context summary with citations
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (read-only, no writes), ✓ fails-loud, ✓ reversible
+
+### archive:now
+- Purpose: archive the current active session to the claude-sessions repo
+- Inputs: (none; auto-detects latest JSONL)
+- Outputs: `sessions/{date}/{slug}.md` + regenerated indexes + git push + bundle backup
+- Risk tier: 🟡
+- Contract: ✓ reports, ✓ archives (originals preserved, idle check enforced), ✓ fails-loud, ✓ reversible (git history)
+
+### archive:backlog
+- Purpose: bulk-import all historical JSONL files from ~/.claude/projects/
+- Inputs: optional `--since YYYY-MM-DD`
+- Outputs: many new session files + regenerated indexes + git push
+- Risk tier: 🟡
+- Contract: ✓ reports, ✓ archives (dry-run preview first), ✓ fails-loud, ✓ reversible
+
+### archive:redact
+- Purpose: find-replace across all archived sessions (for PII scrubbing)
+- Inputs: needle string, replacement string, optional `--force-push`
+- Outputs: modified session files; optionally rewritten git history
+- Risk tier: 🔴 (git history rewrite is IRREVERSIBLE once pushed)
+- Contract: ✓ reports, ✓ archives (dry-run preview), ✓ fails-loud, 🟡 reversible (git history scrub is one-way)
+
+### archive:refresh
+- Purpose: regenerate INDEX.md + by-date/ + by-topic/ deterministically
+- Inputs: (none)
+- Outputs: overwritten index files (no source data changes)
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (deterministic output), ✓ fails-loud, ✓ reversible
+
+### archive:status
+- Purpose: show archive stats (session count, dates, tags, size, latest)
+- Inputs: (none)
+- Outputs: stats summary (read-only)
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (read-only), ✓ fails-loud, ✓ reversible
+
+---
+
 ## 🧬 Registry metadata
 
-- Last updated: 2026-04-16
-- Total skills: 22 across 7 families
-- Contract-compliant: 22 / 22 ✅
+- Last updated: 2026-04-16 (v2 — added claude-sessions family)
+- Total skills: 29 across 8 families
+- Contract-compliant: 29 / 29 ✅
 - Legend:
   - 🟢 Low risk — auto-execute
   - 🟡 Medium risk — confirmed batch
