@@ -1,5 +1,6 @@
 ---
 name: mewtwo
+domain: general
 description: >
   The master orchestrator. Receives high-level intent, decomposes into
   sub-tasks, selects from the skill registry, proposes an execution plan,
