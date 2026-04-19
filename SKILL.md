@@ -10,6 +10,20 @@ description: >
   NOT for: creating a new skill from scratch (use skill-builder).
   NOT for: top-level dashboard / routing between domain anchors (use .home).
   NOT for: fund-specific attention ranking (use .chief).
+capabilities:
+  reads:
+    - "SKILLS_REGISTRY.md"
+    - "CONTRACT.md"
+    - "FAILURE_MODES.md"
+    - "all SKILL.mds"
+  writes:
+    - "mewtwo/logs/*.md"
+  calls:
+    - "ANY registered skill with contract declaration"
+  cannot:
+    - "bypass tier-gate confirmations"
+    - "call skills missing contract declaration"
+    - "silently swallow errors"
 ---
 
 # 🧬 /mewtwo — Master Orchestrator (durability edition)
