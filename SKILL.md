@@ -1,5 +1,6 @@
 ---
 name: mewtwo
+version: 0.2.0
 domain: general
 description: >
   The master orchestrator. Receives high-level intent, decomposes into
