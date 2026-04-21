@@ -255,11 +255,86 @@
 
 ---
 
+## command-center (morning dashboard + interest learning loop)
+
+- **Repo:** `command-center/` (local)
+- **Role:** 4-panel Cowork artifact — stock news, geopolitics, Gmail, to-dos — refreshed daily at 9am, ranked by a live interest model that learns from user engagement.
+- **Integration:** Fund ops tier. Reads from blue-hill-capital/watchlist.md, writes engagement log consumed by pattern-observer.
+
+### command-center:cc
+- Purpose: open/refresh the dashboard artifact
+- Inputs: (none; reads data/interests.md + data/*.json)
+- Outputs: rendered 4-panel artifact in Cowork sidebar
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (engagement log append-only), ✓ fails-loud, ✓ reversible
+
+### command-center:fetch-stocks
+- Purpose: scheduled 9am morning pull of stock news per interests.md
+- Inputs: interests.md stock signals
+- Outputs: data/stock-news.json
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (7-day dedupe history), ✓ fails-loud, ✓ reversible
+
+### command-center:fetch-geo
+- Purpose: scheduled 9am morning pull of geopolitics news per interests.md
+- Inputs: interests.md geopolitics signals
+- Outputs: data/geopolitics-news.json
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (7-day dedupe history), ✓ fails-loud, ✓ reversible
+
+### command-center:retro
+- Purpose: weekly — pattern-observer reads engagement log, proposes interest-weight updates
+- Inputs: data/engagement-log.jsonl
+- Outputs: proposed diff to interests.md (user confirms before write)
+- Risk tier: 🟡
+- Contract: ✓ reports, ✓ archives (diff preview), ✓ fails-loud, ✓ reversible
+
+---
+
+## desk-ops (computer-use family for Mac automation)
+
+- **Repo:** `desk-ops/` (local)
+- **Role:** Family of native-macOS automation skills. All members obey propose → confirm → execute → log → undo.
+- **Integration:** Sibling to the fund's `*-desk` family. Called by mewtwo for any native-app task.
+
+### desk-ops:file-mover
+- Purpose: rule-based file moves across folders
+- Inputs: YAML config, source directories
+- Outputs: moved files, logs/YYYY-MM-DD.md with undo commands
+- Risk tier: 🟡
+- Contract: ✓ reports, ✓ archives (dry-run default), ✓ fails-loud, ✓ reversible
+
+### desk-ops:finder-cleanup
+- Purpose: triage report for Downloads/Desktop/etc.
+- Inputs: folder path
+- Outputs: markdown classification report (never moves)
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (read-only), ✓ fails-loud, ✓ reversible (no-op)
+
+### desk-ops:shortcuts-runner
+- Purpose: fire macOS Shortcuts via `shortcuts` CLI
+- Inputs: shortcut name, optional input text
+- Outputs: shortcut runs, log entry
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (log entry), ✓ fails-loud, ✓ reversible (depends on shortcut)
+
+### desk-ops:photos-organizer (stub)
+- Purpose: (v0.2) album creation + dedupe in Photos.app
+- Status: SKILL.md spec only
+- Risk tier: 🟡
+
+### desk-ops:form-filler (stub)
+- Purpose: (v0.2) native-app form filling via computer-use
+- Status: SKILL.md spec only
+- Risk tier: 🟡 (never fills password/signature/payment)
+
+---
+
 ## 🧬 Registry metadata
 
-- Last updated: 2026-04-16 (v2 — added claude-sessions family)
-- Total skills: 29 across 8 families
-- Contract-compliant: 29 / 29 ✅
+- Last updated: 2026-04-21 (v4 — added desk-ops family)
+- Total skills: 38 across 10 families
+- Contract-compliant: 38 / 38 ✅
 - Legend:
   - 🟢 Low risk — auto-execute
   - 🟡 Medium risk — confirmed batch
