@@ -8,7 +8,7 @@ description: >
   confirms once, and executes with tiered automation + full audit trail.
   Every run is logged. Every write is archived. Every failure is loud.
   Durability-first design.
-  NOT for: creating a new skill from scratch (use skill-builder).
+  NOT for: creating a new skill from scratch (use snes-builder).
   NOT for: top-level dashboard / routing between domain anchors (use .home).
   NOT for: fund-specific attention ranking (use .chief).
 capabilities:
