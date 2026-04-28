@@ -45,7 +45,13 @@ unix_contract:
   stdin_support: false
   stdout_format: "markdown"
   composable_with:
-    - "ALL (orchestrator)"
+    - "snes-builder"
+    - "snes-fit"
+    - "forensic"
+    - "royal-rumble"
+    - "journalist"
+    - "ideas"
+    - "tier"
 ---
 
 # 🧬 .mewtwo — Master Orchestrator (durability edition)

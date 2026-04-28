@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1.0",
+  "description": "Schema version pin for mewtwo. Read by snes-fit dim 08_design_audit. Bump on any breaking change to logs/{RUN_ID}.md or schemas/*.template.md.",
+  "schemas": {
+    "run_log": {
+      "version": "0.1.0",
+      "template": "schemas/LOG.template.md",
+      "format": "markdown",
+      "append_only": true
+    },
+    "plan": {
+      "version": "0.1.0",
+      "template": "schemas/PLAN.template.md",
+      "format": "markdown"
+    },
+    "registry_entry": {
+      "version": "0.1.0",
+      "template": "schemas/SKILL_ENTRY.template.md",
+      "format": "markdown",
+      "validation": "mewtwo --validate"
+    }
+  },
+  "self_contract": {
+    "version": "0.1.0",
+    "checkmarks_required": ["reports", "archives", "fails-loud", "reversible"],
+    "validate_command": "mewtwo:self-validate",
+    "run_at": "STEP 0 PRE-FLIGHT"
+  },
+  "last_reviewed": "2026-04-28"
+}
