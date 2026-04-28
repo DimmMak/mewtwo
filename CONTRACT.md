@@ -81,6 +81,8 @@ If neither is possible, the skill is flagged 🔴 IRREVERSIBLE in the registry a
    git push origin main → once pushed, others may pull
 ```
 
+**Tightened tier definition (clarified 2026-04-28 per forensic LOW #1):** the 🟡 "manual reverse documented" tier is acceptable only when the undo command is **a single concrete shell command** (like `rm ~/.claude/skills/{name}.skill`). If the undo requires more than one command, multi-step reasoning, or human judgment to find the right files — escalate to 🔴 IRREVERSIBLE. The tier exists for one-liner undos; anything more complex is irreversible in practice.
+
 ---
 
 ### 5. DECLARE IN REGISTRY — No hidden skills

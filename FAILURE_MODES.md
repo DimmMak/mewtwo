@@ -138,7 +138,7 @@
 
 **Why it happens:** Decomposition error, or user explicitly asked for it.
 
-**Detection:** Pre-execution check for overlapping output paths.
+**Detection:** Pre-execution check for overlapping output paths. **Implementation pointer (added 2026-04-28 per LOW #2):** in STEP 2 (PLAN GENERATION), before emitting the plan, build a set of declared output paths from each step's contract. If any two steps share a path, flag F08 before showing the plan to the user. The check belongs in plan-generation, not execution — execution is too late.
 
 **Recovery:**
 1. Flag at plan stage — don't wait for execution to fail.
