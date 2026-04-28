@@ -10,7 +10,7 @@ description: >
   Durability-first design.
   ALWAYS fire this skill when the user requests work that spans 2+ skills,
   asks to "orchestrate" / "chain" / "pipeline" / "run a workflow across" /
-  "do X then Y then Z", or types `.mewtwo` / `/mewtwo`. Trigger phrases include
+  "do X then Y then Z", or types `.mewtwo` / `.mewtwo`. Trigger phrases include
   but are not limited to: "orchestrate this", "chain X and Y", "run the whole
   pipeline", "plan and execute", "decompose this", "multi-step task", "do all
   of these in order", "set up a workflow", "wire X into Y into Z". Also fires
@@ -48,7 +48,7 @@ unix_contract:
     - "ALL (orchestrator)"
 ---
 
-# 🧬 /mewtwo — Master Orchestrator (durability edition)
+# 🧬 .mewtwo — Master Orchestrator (durability edition)
 
 You are the router across ALL of the user's `.skill` library. You don't do the work — you decompose intent and delegate to specialists. Every action is gated by automation tier + contract enforcement.
 
@@ -220,7 +220,7 @@ ARTIFACTS PRODUCED:
 
 FINAL DELIVERABLE: {what the user can do now}
 
-Run again with: /mewtwo {next logical request}
+Run again with: .mewtwo {next logical request}
 Undo with: see logs/{RUN_ID}.md → archived originals listed there
 ```
 
@@ -256,12 +256,63 @@ Append to `logs/{RUN_ID}.md`:
 
 | Command | What it does |
 |---|---|
-| `/mewtwo [intent]` | Full orchestration flow (plan → confirm → execute → report) |
-| `/mewtwo --plan-only [intent]` | Show the plan, do NOT execute (dry run) |
-| `/mewtwo --registry` | Print the registry summary |
-| `/mewtwo --log [run-id]` | Show a previous run's audit trail |
-| `/mewtwo --undo [run-id]` | Show reversal instructions for a previous run |
-| `/mewtwo --validate` | Check registry integrity + contract compliance |
+| `.mewtwo [intent]` | Full orchestration flow (plan → confirm → execute → report) |
+| `.mewtwo --plan-only [intent]` | Show the plan, do NOT execute (dry run) |
+| `.mewtwo --registry` | Print the registry summary |
+| `.mewtwo --log [run-id]` | Show a previous run's audit trail |
+| `.mewtwo --undo [run-id]` | Show reversal instructions for a previous run |
+| `.mewtwo --validate` | Check registry integrity + contract compliance |
+| `.mewtwo --self-validate` | Validate mewtwo's own contract entry (closes self-ref paradox) |
+
+**Prefix convention (clarified 2026-04-28 per forensic MED #1):** the canonical trigger prefix is `.mewtwo` (dot-prefix, fleet-wide convention shared with `.rumble`, `.tier`, `.forensic`). The legacy `/mewtwo` (slash-prefix) is accepted as an alias but not encouraged in new docs.
+
+---
+
+## WORKED EXAMPLE (added 2026-04-28 per forensic MED #2)
+
+**User:** `.mewtwo build a memo on AAPL — pull a rumble verdict, draft a Howard Marks memo, and append the memo to my ideas vault`
+
+**STEP 0 — Pre-flight:** read `SKILLS_REGISTRY.md`, run `mewtwo:self-validate` (passes — all 4 checkmarks present on self-entry as of 2026-04-28), read `CONTRACT.md`, `FAILURE_MODES.md`. Set `RUN_ID = mewtwo-2026-04-28T17-30-15`.
+
+**STEP 1 — Decomposition:** final deliverable = an entry in the ideas vault containing a memo on AAPL. Three sub-tasks:
+1. `royal-rumble:rumble AAPL` — produce a verdict
+2. `journalist:memo AAPL` — convert verdict to memo prose
+3. `ideas:append` — drop the memo into the vault
+
+**STEP 2 — Plan emit (asks for confirmation):**
+```
+🧬 MEWTWO PLAN — mewtwo-2026-04-28T17-30-15
+
+INTENT: AAPL memo, end-to-end (rumble verdict → memo prose → vault entry)
+
+STEPS:
+  1. 🟡 royal-rumble:rumble  — generate verdict — output to predictions.json
+  2. 🟢 journalist:memo      — read verdict → emit memo markdown
+  3. 🟡 ideas:append         — write memo to ideas/log.md (append-only)
+
+RISK BUDGET:
+  🟢 auto: 1 · 🟡 confirmed batch: 2 · 🔴 per-action: 0
+
+ESTIMATED TIME: ~6 min
+
+Confirm? [y / n / modify]
+```
+
+**STEP 3 — Execution after `y`:** runs each step, contract-validates each call (skill 2 has 4 checkmarks; skill 3 has 3 → emits WARNING, asks `--allow-uncontracted`; user accepts; logged as `contract_override`).
+
+**STEP 6 — Synthesis:**
+```
+🧬 MEWTWO RUN mewtwo-2026-04-28T17-30-15 — COMPLETE
+
+ARTIFACTS PRODUCED:
+  - royal-rumble/data/predictions.json (1 new entry)
+  - ideas/log.md (1 new entry, line 247)
+  - mewtwo/logs/mewtwo-2026-04-28T17-30-15.md (full audit trail)
+
+FINAL DELIVERABLE: AAPL memo at ideas/log.md:247
+```
+
+This example is illustrative; actual sub-skill behavior is governed by each skill's own SKILL.md.
 
 ---
 
