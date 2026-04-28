@@ -1,6 +1,6 @@
 ---
 name: mewtwo
-version: 0.2.0
+version: 0.2.1
 domain: general
 description: >
   The master orchestrator. Receives high-level intent, decomposes into
@@ -8,6 +8,20 @@ description: >
   confirms once, and executes with tiered automation + full audit trail.
   Every run is logged. Every write is archived. Every failure is loud.
   Durability-first design.
+  ALWAYS fire this skill when the user requests work that spans 2+ skills,
+  asks to "orchestrate" / "chain" / "pipeline" / "run a workflow across" /
+  "do X then Y then Z", or types `.mewtwo` / `/mewtwo`. Trigger phrases include
+  but are not limited to: "orchestrate this", "chain X and Y", "run the whole
+  pipeline", "plan and execute", "decompose this", "multi-step task", "do all
+  of these in order", "set up a workflow", "wire X into Y into Z". Also fires
+  when the user explicitly asks for a plan-confirm-execute flow on any task
+  that mentions multiple skill names, OR when the deliverable requires the
+  output of skill A to feed skill B.
+  NOT for: single-skill invocations (`.rumble TICKER`, `.price`, `.tier`) —
+  call those directly; mewtwo adds ceremony to one-shot work.
+  NOT for: read-only queries that don't modify state (`.price`, `.macro`).
+  NOT for: skills that already self-orchestrate internally (royal-rumble's
+  stage 2 challenge loop manages itself).
   NOT for: creating a new skill from scratch (use snes-builder).
   NOT for: top-level dashboard / routing between domain anchors (use .home).
   NOT for: fund-specific attention ranking (use .chief).
@@ -44,11 +58,12 @@ You are the router across ALL of the user's `.skill` library. You don't do the w
 
 Read in order:
 1. `SKILLS_REGISTRY.md` — the full manifest of available skills
-2. `CONTRACT.md` — rules every skill must follow (for enforcement)
-3. `FAILURE_MODES.md` — known failure patterns to watch for
-4. Current working directory context
+2. **`SKILLS_REGISTRY.md` → mewtwo self-entry → `mewtwo:self-validate`** — verify all 4 contract checkmarks are present on mewtwo's own entry. If any are missing, emit `🛑 SELF-CONTRACT VIOLATION — mewtwo missing: {missing}` and **REFUSE to orchestrate**. Closes the self-reference paradox: the orchestrator must clear its own contract before policing others. (Added 2026-04-28 per forensic CRIT #2.)
+3. `CONTRACT.md` — rules every skill must follow (for enforcement)
+4. `FAILURE_MODES.md` — known failure patterns to watch for
+5. Current working directory context
 
-Set `RUN_ID = mewtwo-{YYYY-MM-DDTHH-MM}`. Create `logs/{RUN_ID}.md` from `schemas/LOG.template.md`.
+Set `RUN_ID = mewtwo-{YYYY-MM-DDTHH-MM-SS}` (seconds added to prevent same-minute collisions). Create `logs/{RUN_ID}.md` from `schemas/LOG.template.md`.
 
 ---
 

@@ -330,11 +330,39 @@
 
 ---
 
+## mewtwo (orchestrator — self-entry, added per forensic CRIT #2 2026-04-28)
+
+> The orchestrator must declare its own contract. Without this entry, the auditor of contracts is itself unaudited (self-reference paradox). Every other skill in this registry is policed by mewtwo; mewtwo is policed by this entry.
+
+### mewtwo:orchestrate
+- Purpose: decompose user intent into sub-tasks, select skills, plan + confirm + execute with audit trail
+- Inputs: high-level user intent (natural language or `.mewtwo [intent]`)
+- Outputs: `mewtwo/logs/{RUN_ID}.md` (full audit trail), plus whatever artifacts the called skills produce
+- Risk tier: 🟡 (mewtwo itself is medium-risk — orchestration touches multiple skills, but each step is gated by its own tier)
+- Contract: ✓ reports (final synthesis at STEP 6), ✓ archives (every called skill must archive per its own contract; mewtwo logs the archive path), ✓ fails-loud (STEP 5 mid-run failure handling — never silently continues), ✓ reversible (every artifact path is logged; reversal instructions in `--undo` subcommand)
+
+### mewtwo:validate
+- Purpose: check registry integrity + contract compliance for all skills
+- Inputs: this file (`SKILLS_REGISTRY.md`)
+- Outputs: list of contract violations (skills with ✗ or missing checkmarks)
+- Risk tier: 🟢 (read-only)
+- Contract: ✓ reports, ✓ archives (read-only — N/A), ✓ fails-loud, ✓ reversible (read-only — N/A)
+
+### mewtwo:self-validate
+- Purpose: assert that mewtwo's own entry above declares all 4 checkmarks. Closes the self-reference paradox: if the orchestrator's entry is ever edited to remove a checkmark, this skill emits a critical violation against itself
+- Inputs: this entry's checkmark line
+- Outputs: PASS or `🛑 SELF-CONTRACT VIOLATION — mewtwo missing: {missing}`
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (N/A), ✓ fails-loud, ✓ reversible (N/A)
+- **Run cadence:** at the start of every mewtwo invocation (STEP 0 PRE-FLIGHT), before reading any other registry entry. If self-validate fails, mewtwo refuses to orchestrate.
+
+---
+
 ## 🧬 Registry metadata
 
-- Last updated: 2026-04-21 (v4 — added desk-ops family)
-- Total skills: 38 across 10 families
-- Contract-compliant: 38 / 38 ✅
+- Last updated: 2026-04-28 (v5 — added mewtwo self-entry per forensic CRIT #2)
+- Total skills: 39 across 10 families (+ mewtwo self)
+- Contract-compliant: 39 / 39 ✅
 - Legend:
   - 🟢 Low risk — auto-execute
   - 🟡 Medium risk — confirmed batch
