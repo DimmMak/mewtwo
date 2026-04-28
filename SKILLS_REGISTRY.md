@@ -330,6 +330,43 @@
 
 ---
 
+## snes-fit (fleet-wide QA / structural conformance auditor)
+
+- **Repo:** https://github.com/DimmMak/snes-fit
+- **Role:** Audits any skill in the fleet against `SPEC.md` (structural, adversarial, scale, composition, security, threat-intel, type, design dimensions). Plugin architecture; ships only when decay rule hits 2 consecutive zero-finding rounds.
+- **Composability:** bilateral with mewtwo (this entry, added 2026-04-28 per forensic HIGH #9 — closes the one-way composability claim documented in snes-fit's frontmatter).
+
+### snes-fit:audit
+- Purpose: run all enabled dimensions against a target skill, emit scorecard
+- Inputs: skill name (`--skill <name>`) or `--all` for fleet sweep
+- Outputs: `vault/<skill>/findings.jsonl` (append), `reports/<date>-<skill>.md`
+- Risk tier: 🟢 (read-only against target — NON_GOALS.md #13 forbids modification of audited skill)
+- Contract: ✓ reports (markdown scorecard), ✓ archives (JSONL append-only — no replace), ✓ fails-loud (critical findings block ship-gate), ✓ reversible (read-only, N/A)
+
+### snes-fit:design-audit
+- Purpose: fast structural/design check (dimension 08 only)
+- Inputs: skill name
+- Outputs: `vault/<skill>/findings.jsonl` (subset)
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (append-only), ✓ fails-loud, ✓ reversible (N/A)
+
+### snes-fit:create
+- Purpose: scaffold an Anthropic-compatible `evals.json` for a skill
+- Inputs: skill name
+- Outputs: `evals/<skill>/evals.json` (new file — refuses to overwrite without `--force`)
+- Risk tier: 🟡 (writes to evals dir; no destructive action)
+- Contract: ✓ reports, ✓ archives (refuses to overwrite without flag), ✓ fails-loud, ✓ reversible (`rm evals/<skill>/evals.json`)
+
+### snes-fit:self-audit
+- Purpose: run dimension 00_self against snes-fit itself before any fleet sweep
+- Inputs: implicit (target = snes-fit)
+- Outputs: PASS or critical-findings list
+- Risk tier: 🟢
+- Contract: ✓ reports, ✓ archives (N/A), ✓ fails-loud (refuses to fleet-sweep on critical), ✓ reversible (N/A)
+- **Run cadence:** automatic at the start of every `audit --all` invocation (per dimensions/00_self/README.md run-cadence rule).
+
+---
+
 ## mewtwo (orchestrator — self-entry, added per forensic CRIT #2 2026-04-28)
 
 > The orchestrator must declare its own contract. Without this entry, the auditor of contracts is itself unaudited (self-reference paradox). Every other skill in this registry is policed by mewtwo; mewtwo is policed by this entry.
@@ -360,9 +397,9 @@
 
 ## 🧬 Registry metadata
 
-- Last updated: 2026-04-28 (v5 — added mewtwo self-entry per forensic CRIT #2)
-- Total skills: 39 across 10 families (+ mewtwo self)
-- Contract-compliant: 39 / 39 ✅
+- Last updated: 2026-04-28 (v6 — added snes-fit per forensic HIGH #9 + mewtwo self-entry per forensic CRIT #2)
+- Total skills: 43 across 11 families (+ mewtwo self)
+- Contract-compliant: 43 / 43 ✅
 - Legend:
   - 🟢 Low risk — auto-execute
   - 🟡 Medium risk — confirmed batch

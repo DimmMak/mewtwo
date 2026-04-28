@@ -139,24 +139,51 @@ Before calling any skill, verify its registry entry declares:
 - ✓ Fails loud with a suggested fix
 - ✓ Reversible (or marked IRREVERSIBLE in registry)
 
-If a skill lacks a contract declaration → refuse to call it:
+**Soft-fail path (added 2026-04-28 per forensic HIGH #3):** at fleet scale, many legitimate skills lack full contract declarations. Strict refusal makes mewtwo unusable. So:
+
+| 🟣 State | 🟣 Mewtwo behavior |
+|---|---|
+| All 4 checkmarks present | ✅ proceed without prompt |
+| 1-3 checkmarks missing | ⚠️ emit WARNING block (see below); require explicit `--allow-uncontracted` flag in plan or per-call confirm |
+| Skill not in registry at all | 🛑 hard refuse (was the only behavior pre-2026-04-28; preserved for unregistered skills) |
+
+WARNING block format (mid-tier):
+```
+⚠️ CONTRACT GAP
+   Skill {name} is missing: {missing-checkmarks}
+   Risk: {what-could-go-wrong, e.g. "no archive path → silent overwrite possible"}
+
+   Options:
+     1. Proceed anyway (you accept the risk; logged as `contract_override`)
+     2. Refuse this skill, replan without it
+     3. Update the skill's registry entry first, then retry
+```
+
+Hard refusal (preserved) for unregistered skills:
 ```
 🛑 CONTRACT VIOLATION
-   Skill {name} has no contract declaration in SKILLS_REGISTRY.md
-   Cannot safely include in orchestration.
-   
-   Fix: update the skill's entry to declare its contract compliance.
-   Or: invoke it manually outside of mewtwo (bypasses safety).
+   Skill {name} has no entry in SKILLS_REGISTRY.md at all.
+   Cannot safely include in orchestration — even soft-fail requires a registry entry.
+
+   Fix: add an entry (even minimal) before calling.
 ```
 
 ---
 
 ## STEP 5 — MID-RUN FAILURE HANDLING
 
+**Definition of "loud" (added 2026-04-28 per forensic HIGH #2):**
+Every failure must be observable through ALL THREE channels — not just one:
+1. **Final-line emit** — the response's last visible line is `🛑 FAILED at Step N: {skill:action}`. The user cannot scroll past it.
+2. **Banner block** — the failure block uses the 🛑 emoji header + recovery options table; visually distinct from any success or progress text.
+3. **Log marker** — `logs/{RUN_ID}.md` final line is `STATUS: FAILED` (or `PARTIAL`). A future audit can grep `STATUS: FAILED` across all logs without parsing prose.
+
+If any of the three is missing, the failure is silent by definition. "Loud" is enforced in code (logging) AND in output shape (final-line + banner) — not in tone.
+
 If ANY step fails:
-1. Log the failure with full context
+1. Log the failure with full context (sets `STATUS: FAILED`)
 2. **STOP the chain** — don't cascade failures
-3. Report:
+3. Report (banner + final-line emit per the loudness contract):
 ```
 🛑 FAILED at Step {N}: {skill:action}
    Error: {message}
