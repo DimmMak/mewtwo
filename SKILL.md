@@ -167,8 +167,22 @@ Parse user's request. Ask yourself:
 2. What are the 2-6 sub-tasks needed to produce it?
 3. Which skill from the registry owns each sub-task?
 4. What must flow between them (inputs/outputs)?
+5. **🆕 Does any sub-task need fundamentals (revenue / EPS / margins / balance sheet / cash flow / filing dates)?** If yes → check local EDGAR cache FIRST per `feedback_local_cache_first.md`. The cache at `~/Desktop/CLAUDE CODE/financial datasets/` is 1-hop SEC truth; yfinance is 4-hops stale. **Default routing: if `<TICKER>.csv` exists in cache, use `edgar_query.py` instead of `fundamentals-desk`.**
 
 If intent is unclear → ask ONE clarifying question. Don't dump 5.
+
+### 🆕 Fundamentals routing decision tree
+
+```
+Is it a fundamentals query (rev / EPS / margins / cash flow / filing date)?
+├── YES → ls "/Users/danny/Desktop/CLAUDE CODE/financial datasets/<TICKER>.csv"
+│         ├── exists → python3 edgar_query.py <TICKER> <Concept> <N>
+│         │           Tag output: [SEC EDGAR via local cache, refreshed YYYY-MM-DD]
+│         └── missing → suggest `python3 edgar_refresh.py <TICKER>` OR fallback to yfinance with 🚨 STALE-RISK flag
+└── NO (price / news / sentiment / forward guidance / ETH) → use existing desk routing
+```
+
+**Refresh check:** if `_refresh_summary.csv` last refresh > 7 days, suggest refresh before query. > 14 days, require it.
 
 ---
 
